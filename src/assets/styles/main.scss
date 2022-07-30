@@ -1,0 +1,18 @@
+.fade-enter-active,
+.fade-exit-active {
+    transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-exit-to {
+    opacity: 0;
+}
+
+.app-region {
+    &-drag {
+        -webkit-app-region: drag;
+    }
+
+    &-no-drag {
+        -webkit-app-region: no-drag;
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "allowJs": true,
+        "target": "ES2020",
+        "strict": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "jsx": "preserve",
+        "jsxImportSource": "solid-js",
+        "experimentalDecorators": true,
+        "typeRoots": ["./node_modules/@types", "./@types"]
+    },
+    "exclude": ["node_modules", "dist", "./**/*.js", "./**/*.jsx"]
+}
