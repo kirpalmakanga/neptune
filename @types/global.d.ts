@@ -12,6 +12,8 @@ declare global {
         trackNumber: number;
         discNumber: string;
         source: string;
+        year: number;
+        cover: Buffer;
     }
 
     interface Playlist {

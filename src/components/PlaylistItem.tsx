@@ -3,7 +3,7 @@ import { formatTime } from '../utils/helpers';
 import Icon from './Icon';
 
 interface Props extends Track {
-    isActive: boolean;
+    isCurrent: boolean;
     onClick: VoidFunction;
 }
 
@@ -15,8 +15,9 @@ const PlaylistItem: Component<Props> = (props) => {
 
     return (
         <div
-            class="flex items-center p-3 gap-3 text-primary-100 bg-primary-700 hover:bg-primary-600 select-none"
-            onClick={props.onClick}
+            class="flex items-center p-3 gap-3 text-primary-100 bg-primary-700 hover:bg-primary-600 select-none cursor-pointer"
+            classList={{ 'bg-primary-500': props.isCurrent }}
+            onDblClick={props.isCurrent ? undefined : props.onClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -24,7 +25,7 @@ const PlaylistItem: Component<Props> = (props) => {
                 <Show when={isHovered()} fallback={props.trackNumber}>
                     <Icon
                         class="w-6 h-6"
-                        name={props.isActive ? 'pause ' : 'play'}
+                        name={props.isCurrent ? 'pause ' : 'play'}
                     />
                 </Show>
             </div>

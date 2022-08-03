@@ -10,12 +10,13 @@ function createWindow() {
         height: 600,
         backgroundColor: '#21222c',
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: true
+            preload: path.join(__dirname, 'preload.ts'),
+            nodeIntegration: true,
+            webSecurity: false
         }
     });
 
-    mainWindow.removeMenu();
+    // mainWindow.removeMenu();
 
     mainWindow.maximize();
 

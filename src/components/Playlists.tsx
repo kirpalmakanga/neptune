@@ -1,19 +1,28 @@
-import { Component, For } from 'solid-js';
+import { Component, createSignal, For } from 'solid-js';
 import { NavLink } from '@solidjs/router';
 import Icon from './Icon';
 import ScrollContainer from './ScrollContainer';
 
 import { usePlaylists } from '../store/playlists';
+import SlidePanel from './SlidePanel';
 
 const Playlists: Component = () => {
     const [playlists] = usePlaylists();
+    const [isFormOpen, setIsFormOpen] = createSignal(false);
+
+    const handleOpenAddForm = () => setIsFormOpen(true);
+
+    const handleCloseAddForm = () => setIsFormOpen(false);
 
     return (
         <header class="flex flex-col w-xs bg-primary-800">
             <div class="flex gap-3 justify-between items-center font-bold  p-3">
                 <h2 class="text-primary-100">Playlists</h2>
 
-                <button class="inline-block w-5 h-5 text-primary-100 hover:opacity-70">
+                <button
+                    class="inline-block w-5 h-5 text-primary-100 hover:opacity-70"
+                    onClick={handleOpenAddForm}
+                >
                     <Icon class="w-5 h-5" name="add" />
                 </button>
             </div>
@@ -43,6 +52,12 @@ const Playlists: Component = () => {
                     </For>
                 </ul>
             </ScrollContainer>
+
+            <SlidePanel
+                title="Test"
+                isVisible={isFormOpen()}
+                onClickClose={handleCloseAddForm}
+            />
         </header>
     );
 };

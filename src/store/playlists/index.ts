@@ -1,6 +1,5 @@
 import { v4 as uuid } from 'uuid';
 import { useStore } from '..';
-import { initialState, PlaylistsState } from './_state';
 
 export const usePlaylists = () => {
     const [{ playlists }, setState] = useStore();
@@ -38,6 +37,29 @@ export const usePlaylists = () => {
     const getPlaylistById = (targetId: string) =>
         playlists.items.find(({ id }) => id === targetId);
 
+    const addPlaylistItems = (targetPlaylistId: string, items: Track[]) => {
+        const playlist = getPlaylistById(targetPlaylistId);
+
+        if (!playlist) throw new Error(`This playlist doesn't exist`);
+
+        /* TODO: if item exists: update object */
+
+        const { items: currentItems = [] } = playlist;
+        const currentSources = currentItems.map(({ source }) => source);
+        const newItems = items.filter(
+            ({ source }) => !currentSources.includes(source)
+        );
+
+        if (newItems.length)
+            setState(
+                'playlists',
+                'items',
+                ({ id }) => id === targetPlaylistId,
+                'items',
+                [...currentItems, ...newItems]
+            );
+    };
+
     return [
         playlists,
         {
@@ -46,7 +68,8 @@ export const usePlaylists = () => {
             deletePlaylist,
             clearPlaylist,
             getPlaylistByIndex,
-            getPlaylistById
+            getPlaylistById,
+            addPlaylistItems
         }
     ] as const;
 };

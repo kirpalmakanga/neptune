@@ -7,6 +7,17 @@
     opacity: 0;
 }
 
+.slide-left {
+    &-enter-active,
+    &-exit-active {
+        transition: transform 0.3s;
+    }
+    &-enter,
+    &-exit-to {
+        transform: translateX(100%);
+    }
+}
+
 .app-region {
     &-drag {
         -webkit-app-region: drag;
