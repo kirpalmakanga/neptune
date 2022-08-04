@@ -12,7 +12,6 @@ import Img from '../Img';
 interface State {
     isPlaying: boolean;
     isLoading: boolean;
-    isPlayerReady: boolean;
     currentTime: number;
 }
 
@@ -38,7 +37,6 @@ const Player: Component = () => {
     const [state, setState] = createStore<State>({
         isPlaying: false,
         isLoading: false,
-        isPlayerReady: true,
         currentTime: player.currentTime
     });
 
@@ -100,9 +98,6 @@ const Player: Component = () => {
 
         setCurrentTime(time);
     };
-
-    const handlePlayerStateChange = (isReady: boolean) =>
-        setState('isPlayerReady', isReady);
 
     return (
         <div class="flex items-center bg-primary-900 p-2 gap-4 overflow-hidden">
@@ -166,7 +161,6 @@ const Player: Component = () => {
                 onPlaybackStateChange={handlePlaybackStateChange}
                 onLoadingStateChange={handleLoadingStateChange}
                 onTimeUpdate={handleTimeUpdate}
-                onPlayerStateChange={handlePlayerStateChange}
                 onEnd={handleSkipTrack('next')}
             />
 
@@ -174,13 +168,13 @@ const Player: Component = () => {
                 <span>
                     {currentTrack().duration
                         ? formatTime(state.currentTime)
-                        : '--'}
+                        : '--:--'}
                 </span>
                 <span>/</span>
                 <span>
                     {currentTrack().duration
                         ? formatTime(currentTrack().duration)
-                        : '--'}
+                        : '--:--'}
                 </span>
             </div>
         </div>

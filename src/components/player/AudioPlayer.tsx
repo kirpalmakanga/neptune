@@ -58,20 +58,19 @@ interface Props {
     source: string;
     onPlaybackStateChange: (isPlaying: boolean) => void;
     onLoadingStateChange: (isLoading: boolean) => void;
-    onPlayerStateChange: (isReady: boolean) => void;
     onTimeUpdate: (t: number) => void;
     onEnd: VoidFunction;
 }
 
 const AudioPlayer: Component<Props> = (props) => {
-    const [player, { seek, setVolume, play, pause }] = createAudio(
+    const [audioState, { seek, setVolume, play, pause }] = createAudio(
         () => props.source,
         () => props.isPlaying,
         () => props.volume / 100
     );
 
     const progress = createMemo(
-        () => (100 * player.currentTime) / player.duration
+        () => (100 * audioState.currentTime) / audioState.duration
     );
 
     const handleClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({
@@ -81,7 +80,7 @@ const AudioPlayer: Component<Props> = (props) => {
         const { left } = currentTarget.getBoundingClientRect();
         const positionPercent = (pageX - left) / currentTarget.offsetWidth;
 
-        seek(positionPercent * player.duration);
+        seek(positionPercent * audioState.duration);
     };
 
     onMount(() => {
@@ -102,7 +101,7 @@ const AudioPlayer: Component<Props> = (props) => {
     });
 
     createEffect((previousCurrentTime) => {
-        const { currentTime } = player;
+        const { currentTime } = audioState;
 
         if (currentTime !== previousCurrentTime) {
             props.onTimeUpdate(currentTime);
@@ -112,7 +111,7 @@ const AudioPlayer: Component<Props> = (props) => {
     });
 
     createEffect((previousState) => {
-        const { state } = player;
+        const { state } = audioState;
 
         if (state !== previousState) {
             switch (state) {
@@ -129,14 +128,15 @@ const AudioPlayer: Component<Props> = (props) => {
                     break;
 
                 case 'paused':
-                    if (player.currentTime >= player.duration) props.onEnd();
+                    if (audioState.currentTime >= audioState.duration)
+                        props.onEnd();
                     else props.onPlaybackStateChange(false);
                     break;
             }
         }
 
         return state;
-    }, player.state);
+    }, audioState.state);
 
     return (
         <div
@@ -147,7 +147,7 @@ const AudioPlayer: Component<Props> = (props) => {
 
             <PositionBar />
 
-            <span class="hidden">{player.state}</span>
+            <span class="hidden">{audioState.state}</span>
         </div>
     );
 };
