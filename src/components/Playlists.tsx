@@ -5,14 +5,21 @@ import ScrollContainer from './ScrollContainer';
 
 import { usePlaylists } from '../store/playlists';
 import SlidePanel from './SlidePanel';
+import PlaylistForm, { PlaylistFormState } from './PlaylistForm';
 
 const Playlists: Component = () => {
-    const [playlists] = usePlaylists();
+    const [playlists, { createPlaylist }] = usePlaylists();
     const [isFormOpen, setIsFormOpen] = createSignal(false);
 
     const handleOpenAddForm = () => setIsFormOpen(true);
 
     const handleCloseAddForm = () => setIsFormOpen(false);
+
+    const handleFormSubmit = ({ title }: PlaylistFormState) => {
+        createPlaylist(title);
+
+        handleCloseAddForm();
+    };
 
     return (
         <header class="flex flex-col w-xs bg-primary-800">
@@ -30,20 +37,22 @@ const Playlists: Component = () => {
             <ScrollContainer>
                 <ul>
                     <For each={playlists.items}>
-                        {({ id, title, items }) => (
+                        {(playlist) => (
                             <li>
                                 <NavLink
                                     class="flex gap-3 justify-between items-center p-3 no-underline overflow-hidden text-primary-100 hover:bg-primary-600"
                                     activeClass="bg-primary-700 hover:bg-primary-700"
-                                    href={`/playlist/${id}`}
+                                    href={`/playlist/${playlist.id}`}
                                 >
                                     <span class="text-sm font-bold overflow-ellipsis">
-                                        {title}
+                                        {playlist.title}
                                     </span>
 
                                     <span class="text-xs">
-                                        {`${items.length} track${
-                                            items.length === 1 ? '' : 's'
+                                        {`${playlist.items.length} track${
+                                            playlist.items.length === 1
+                                                ? ''
+                                                : 's'
                                         }`}
                                     </span>
                                 </NavLink>
@@ -54,10 +63,12 @@ const Playlists: Component = () => {
             </ScrollContainer>
 
             <SlidePanel
-                title="Test"
+                title="Add playlist"
                 isVisible={isFormOpen()}
                 onClickClose={handleCloseAddForm}
-            />
+            >
+                <PlaylistForm onSubmit={handleFormSubmit} />
+            </SlidePanel>
         </header>
     );
 };

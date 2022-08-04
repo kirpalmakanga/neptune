@@ -1,4 +1,4 @@
-import { Component, createMemo, Show } from 'solid-js';
+import { Component, createEffect, createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { makeAudioPlayer } from '@solid-primitives/audio';
 import { usePlayer } from '../../store/player';
@@ -98,6 +98,15 @@ const Player: Component = () => {
 
         setCurrentTime(time);
     };
+
+    createEffect((previousTrackId) => {
+        const { currentTrackId } = player;
+
+        if (currentTrackId !== previousTrackId && !state.isPlaying)
+            setState('isPlaying', true);
+
+        return currentTrackId;
+    }, player.currentTrackId);
 
     return (
         <div class="flex items-center bg-primary-900 p-2 gap-4 overflow-hidden">

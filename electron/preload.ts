@@ -1,11 +1,11 @@
-const fs = require('fs');
-const { contextBridge, ipcRenderer } = require('electron');
+const path = require('path');
+const { contextBridge } = require('electron');
 const musicMetadata = require('music-metadata');
 const mime = require('mime-types');
 const { v4: uuid } = require('uuid');
 
 contextBridge.exposeInMainWorld('electron', {
-    getFileMetadata: async (path) => {
+    getFileMetadata: async (filePath) => {
         const {
             common: {
                 album,
@@ -21,22 +21,18 @@ contextBridge.exposeInMainWorld('electron', {
                 ] = [],
                 title,
                 track: { no: trackNumber },
-                year,
-                ...commonMeta
+                year
             },
-            format: { duration, codec },
-            ...metadata
-        } = await musicMetadata.parseFile(path);
-
-        console.log({ commonMeta, metadata });
+            format: { duration, codec }
+        } = await musicMetadata.parseFile(filePath);
 
         return {
             id: uuid(),
-            title,
+            title: title || path.parse(filePath).name,
             artists,
             albumArtists,
             album,
-            genre: genre.join(' ').trim(),
+            genre: genre ? genre.join(' ').trim() : '',
             year,
             duration,
             trackNumber,
