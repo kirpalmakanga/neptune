@@ -5,19 +5,22 @@ import Icon from '../Icon';
 
 interface Props {
     isPlaying: boolean;
+    startTime: number;
     volume: number;
     source: string;
     onPlaybackStateChange: (isPlaying: boolean) => void;
     onBufferingStateChange: (isBuffering: boolean) => void;
-    onTimeUpdate: (t: number) => void;
-    onSeek: (progress: number) => void;
     onPlayerStateChange: (isReady: boolean) => void;
+    onTimeUpdate: (t: number) => void;
+    onEnd: VoidFunction;
 }
 
 interface WavePlayer {
     load: (source: string) => void;
     setVolume: (volume: number) => void;
     getCurrentTime: () => number;
+    getDuration: () => number;
+    seekTo: (progress: number) => void;
     on: (event: string, callback: (data: any) => void) => void;
     un: (event: string, callback: (data: any) => void) => void;
     isPlaying: () => boolean;
@@ -59,6 +62,7 @@ const WavePlayer: Component<Props> = (props) => {
             wavesurfer.load(source);
             wavesurfer.on('ready', onReady);
             wavesurfer.on('error', onError);
+            wavesurfer.on('finish', props.onEnd);
         });
     };
 
@@ -70,7 +74,7 @@ const WavePlayer: Component<Props> = (props) => {
 
     const stopWatchingTime = () => clearInterval(timeWatcher);
 
-    onMount(() => {
+    onMount(async () => {
         const { offsetHeight: height } = waveFormContainer;
 
         wavesurfer = WaveSurfer.create({
@@ -84,11 +88,18 @@ const WavePlayer: Component<Props> = (props) => {
         });
 
         wavesurfer.on('seek', (progress) =>
-            props.onTimeUpdate(progress * wavesurfer.getCurrentTime())
+            props.onTimeUpdate(progress * wavesurfer.getDuration())
         );
+
+        if (props.source) {
+            await loadTrack(props.source);
+
+            if (props.startTime)
+                wavesurfer.seekTo(props.startTime / wavesurfer.getDuration());
+        }
     });
 
-    createEffect((previousSource) => {
+    createEffect(async (previousSource) => {
         const { source } = props;
 
         if (!source) {

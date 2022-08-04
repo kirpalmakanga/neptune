@@ -13,7 +13,12 @@ contextBridge.exposeInMainWorld('electron', {
                 artist: artists,
                 disk: { no: discNumber, of: discCount },
                 genre,
-                picture: [{ data: pictureBuffer }],
+                picture: [
+                    { data: pictureBuffer, format: pictureFormat } = {
+                        data: null,
+                        format: null
+                    }
+                ] = [],
                 title,
                 track: { no: trackNumber },
                 year,
@@ -37,7 +42,11 @@ contextBridge.exposeInMainWorld('electron', {
             trackNumber,
             discNumber,
             discCount,
-            cover: pictureBuffer.toString('base64'),
+            cover: pictureBuffer
+                ? `data:${pictureFormat};base64,${pictureBuffer.toString(
+                      'base64'
+                  )}`
+                : '',
             codec
         };
     }

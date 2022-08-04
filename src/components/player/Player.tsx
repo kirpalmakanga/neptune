@@ -1,4 +1,4 @@
-import { Component, createMemo } from 'solid-js';
+import { Component, createMemo, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { makeAudioPlayer } from '@solid-primitives/audio';
 import { usePlayer } from '../../store/player';
@@ -6,23 +6,40 @@ import { usePlaylists } from '../../store/playlists';
 import Button from '../Button';
 import WavePlayer from './WavePlayer';
 import { formatTime } from '../../utils/helpers';
+import AudioPlayer from './AudioPlayer';
+import Img from '../Img';
 
 interface State {
     isPlaying: boolean;
-    isBuffering: boolean;
+    isLoading: boolean;
     isPlayerReady: boolean;
     currentTime: number;
 }
 
+const defaultTrack: Track = {
+    id: '',
+    title: 'N/A',
+    artists: 'N/A',
+    albumArtists: '',
+    album: '',
+    genre: '',
+    duration: 0,
+    trackNumber: 0,
+    discNumber: '1',
+    source: '',
+    year: 0,
+    cover: ''
+};
+
 const Player: Component = () => {
     const [playlists] = usePlaylists();
-    const [player, {}] = usePlayer();
+    const [player, { setCurrentTrack, setCurrentTime }] = usePlayer();
 
     const [state, setState] = createStore<State>({
         isPlaying: false,
-        isBuffering: false,
-        isPlayerReady: false,
-        currentTime: 0
+        isLoading: false,
+        isPlayerReady: true,
+        currentTime: player.currentTime
     });
 
     const currentPlaylist = createMemo(() =>
@@ -31,11 +48,6 @@ const Player: Component = () => {
 
     const currentTrack = createMemo<Track>(() => {
         const playlist = currentPlaylist();
-        const defaultTrack = {
-            title: 'No active track',
-            artists: 'No artist',
-            duration: 0
-        };
 
         if (playlist)
             return (
@@ -55,9 +67,6 @@ const Player: Component = () => {
 
     const getPlaylistItems = () => currentPlaylist()?.items || [];
 
-    const getTrack = (targetId: string) =>
-        getPlaylistItems().find(({ id }) => id === targetId);
-
     const previousTrackId = createMemo(() => {
         const { id = null } = getPlaylistItems()[currentTrackIndex() - 1] || [];
 
@@ -72,44 +81,54 @@ const Player: Component = () => {
 
     const handleTogglePlay = () => setState('isPlaying', !state.isPlaying);
 
+    const handleSkipTrack = (direction: 'previous' | 'next') => () => {
+        const id = direction === 'previous' ? previousTrackId() : nextTrackId();
+
+        if (id) {
+            setCurrentTrack({ id, playlistId: player.currentPlaylistId });
+        }
+    };
+
     const handlePlaybackStateChange = (isPlaying: boolean) =>
         setState('isPlaying', isPlaying);
 
-    const handleBufferingStateChange = (isBuffering: boolean) =>
-        setState('isBuffering', isBuffering);
+    const handleLoadingStateChange = (isLoading: boolean) =>
+        setState('isLoading', isLoading);
 
-    const handleTimeUpdate = (time: number) => setState('currentTime', time);
+    const handleTimeUpdate = (time: number) => {
+        setState('currentTime', time);
 
-    const handleSeeking = (progress: number) =>
-        setState('currentTime', progress * currentTrack().duration);
-
-    const handlePlayerStateChange = (isReady: boolean) => {
-        console.log({ isReady });
-
-        setState('isPlayerReady', isReady);
+        setCurrentTime(time);
     };
+
+    const handlePlayerStateChange = (isReady: boolean) =>
+        setState('isPlayerReady', isReady);
 
     return (
         <div class="flex items-center bg-primary-900 p-2 gap-4 overflow-hidden">
-            <div
-                class="flex gap-2"
-                classList={{
-                    'pointer-events-none opacity-50': !state.isPlayerReady
-                }}
-            >
+            <div class="flex gap-2">
                 <Button
                     class="w-6 h-6 text-primary-100"
                     classList={{
-                        'pointer-events-none opacity-50':
-                            !state.isPlayerReady || previousTrackId()
+                        'pointer-events-none opacity-50': !previousTrackId()
                     }}
                     icon="previous"
                     iconClass="w-6 h-6"
+                    onClick={handleSkipTrack('previous')}
                 />
 
                 <Button
                     class="w-6 h-6 text-primary-100"
-                    icon={state.isPlaying ? 'pause' : 'play'}
+                    classList={{
+                        'pointer-events-none': state.isLoading
+                    }}
+                    icon={
+                        state.isLoading
+                            ? 'loading'
+                            : state.isPlaying
+                            ? 'pause'
+                            : 'play'
+                    }
                     iconClass="w-6 h-6"
                     onClick={handleTogglePlay}
                 />
@@ -117,38 +136,52 @@ const Player: Component = () => {
                 <Button
                     class="w-6 h-6 text-primary-100"
                     classList={{
-                        'pointer-events-none opacity-50':
-                            !state.isPlayerReady || nextTrackId()
+                        'pointer-events-none opacity-50': !nextTrackId()
                     }}
                     icon="next"
                     iconClass="w-6 h-6"
+                    onClick={handleSkipTrack('next')}
                 />
             </div>
 
-            <div class="flex flex-col gap-1 overflow-hidden">
-                <div class="text-primary-100 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
-                    {currentTrack().title}
-                </div>
+            <div class="flex items-center gap-2">
+                <Img class="h-8 w-8" src={currentTrack().cover} />
 
-                <div class="text-primary-200 text-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
-                    {currentTrack().artists}
+                <div class="flex flex-col gap-1 overflow-hidden">
+                    <div class="text-primary-100 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        {currentTrack().title}
+                    </div>
+
+                    <div class="text-primary-200 text-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        {currentTrack().artists}
+                    </div>
                 </div>
             </div>
 
-            <WavePlayer
+            <AudioPlayer
                 isPlaying={state.isPlaying}
-                volume={player.volume}
+                startTime={state.currentTime}
+                volume={25}
                 source={currentTrack().source}
                 onPlaybackStateChange={handlePlaybackStateChange}
-                onBufferingStateChange={handleBufferingStateChange}
+                onLoadingStateChange={handleLoadingStateChange}
                 onTimeUpdate={handleTimeUpdate}
-                onSeek={handleSeeking}
                 onPlayerStateChange={handlePlayerStateChange}
+                onEnd={handleSkipTrack('next')}
             />
 
-            <div class="text-sm text-primary-100">
-                {formatTime(state.currentTime)} /{' '}
-                {formatTime(currentTrack().duration)}
+            <div class="flex gap-1 text-sm text-primary-100">
+                <span>
+                    {currentTrack().duration
+                        ? formatTime(state.currentTime)
+                        : '--'}
+                </span>
+                <span>/</span>
+                <span>
+                    {currentTrack().duration
+                        ? formatTime(currentTrack().duration)
+                        : '--'}
+                </span>
             </div>
         </div>
     );

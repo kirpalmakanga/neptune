@@ -16,6 +16,20 @@ export const stopPropagation =
 export const delay = (t: number) =>
     new Promise((resolve) => setTimeout(resolve, t));
 
+export const throttle = (callback: (...args: any[]) => void, delay = 50) => {
+    let lastCall = 0;
+
+    return (...args: any[]) => {
+        const now = Date.now();
+
+        if (now - lastCall >= delay) {
+            lastCall = now;
+
+            callback(...args);
+        }
+    };
+};
+
 export const formatTime = (t: number) => {
     const hours = Math.floor(t / 3600);
     const minutes = Math.floor((t - hours * 3600) / 60);

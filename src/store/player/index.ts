@@ -11,5 +11,7 @@ export const usePlayer = () => {
         playlistId: string;
     }) => setState('player', { currentTrackId, currentPlaylistId });
 
-    return [player, { setCurrentTrack }] as const;
+    const setCurrentTime = (t: number) => setState('player', 'currentTime', t);
+
+    return [player, { setCurrentTrack, setCurrentTime }] as const;
 };

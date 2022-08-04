@@ -1,4 +1,9 @@
-import { createContext, useContext, Component, createEffect } from 'solid-js';
+import {
+    createContext,
+    useContext,
+    createEffect,
+    ParentComponent
+} from 'solid-js';
 import { createStore, SetStoreFunction, Store } from 'solid-js/store';
 import { createLocalStorage } from '@solid-primitives/storage';
 import { rootInitialState, RootState } from './_state';
@@ -8,7 +13,7 @@ const StoreContext = createContext();
 
 const storageKey = 'neptune';
 
-export const StoreProvider: Component = (props) => {
+export const StoreProvider: ParentComponent = (props) => {
     const [storage, setStorage] = createLocalStorage();
     const store = createStore<RootState>(
         mergeDeep(
@@ -18,12 +23,13 @@ export const StoreProvider: Component = (props) => {
     );
 
     createEffect(() => {
-        const [{ playlists }] = store;
+        const [{ playlists, player }] = store;
 
         setStorage(
             storageKey,
             JSON.stringify({
-                playlists
+                playlists,
+                player
             })
         );
     });
