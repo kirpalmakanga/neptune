@@ -1,10 +1,10 @@
-import { Component, createSignal, onMount, Show } from 'solid-js';
+import { Component, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Transition } from 'solid-transition-group';
 import Icon from './Icon';
 
 interface Props {
-    class: string;
+    class?: string;
     src: string;
     alt?: string;
     background?: boolean;
@@ -31,7 +31,7 @@ const Img: Component<Props> = (props) => {
     return (
         <span
             class="block relative overflow-hidden"
-            classList={{ [props.class]: !!props.class }}
+            classList={{ [props.class || '']: !!props.class }}
         >
             <Show
                 when={img && img.complete}
