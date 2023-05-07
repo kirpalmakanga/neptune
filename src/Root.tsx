@@ -22,20 +22,18 @@ const Root: ParentComponent = (props) => {
         <>
             <Sprite />
 
-            <Transition name="fade" appear={true}>
-                <div class="flex flex-col flex-grow">
-                    <div class="flex flex-grow">
-                        <Playlists />
+            <div class="flex flex-col flex-grow">
+                <div class="flex flex-grow">
+                    <Playlists />
 
-                        {props.children}
-                    </div>
-                    {/* <Prompt /> */}
-
-                    <Player />
-
-                    <Notifications />
+                    {props.children}
                 </div>
-            </Transition>
+                {/* <Prompt /> */}
+
+                <Player />
+
+                <Notifications />
+            </div>
         </>
     );
 };
