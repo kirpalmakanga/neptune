@@ -15,7 +15,7 @@ const PlaylistItem: Component<Props> = (props) => {
 
     return (
         <div
-            class="flex items-center p-3 gap-3 text-primary-100 bg-primary-700 hover:bg-primary-600 select-none cursor-pointer"
+            class="flex items-center p-3 gap-3 text-primary-100 bg-primary-700 hover:bg-primary-600 transition-colors select-none cursor-pointer"
             classList={{ 'bg-primary-500': props.isCurrent }}
             onDblClick={props.isCurrent ? undefined : props.onClick}
             onMouseEnter={handleMouseEnter}
