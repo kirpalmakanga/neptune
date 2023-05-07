@@ -6,6 +6,7 @@ import ScrollContainer from './ScrollContainer';
 import { usePlaylists } from '../store/playlists';
 import SlidePanel from './SlidePanel';
 import PlaylistForm, { PlaylistFormState } from './PlaylistForm';
+import Button from './Button';
 
 const Playlists: Component = () => {
     const [playlists, { createPlaylist }] = usePlaylists();
@@ -23,15 +24,15 @@ const Playlists: Component = () => {
 
     return (
         <header class="flex flex-col w-xs bg-primary-800">
-            <div class="flex gap-3 justify-between items-center font-bold  p-3">
+            <div class="flex gap-3 justify-between items-center font-bold p-3">
                 <h2 class="text-primary-100">Playlists</h2>
 
-                <button
-                    class="inline-block w-5 h-5 text-primary-100 hover:opacity-70"
+                <Button
+                    class="inline-block w-5 h-5 text-primary-100 hover:opacity-50 transition-opacity"
+                    icon="add"
+                    iconClass="w-5 h-5"
                     onClick={handleOpenAddForm}
-                >
-                    <Icon class="w-5 h-5" name="add" />
-                </button>
+                />
             </div>
 
             <ScrollContainer>
@@ -40,7 +41,7 @@ const Playlists: Component = () => {
                         {(playlist) => (
                             <li>
                                 <NavLink
-                                    class="flex gap-3 justify-between items-center p-3 no-underline overflow-hidden text-primary-100 hover:bg-primary-600"
+                                    class="flex gap-3 justify-between items-center p-3 no-underline overflow-hidden text-primary-100 hover:bg-primary-600 transition-colors"
                                     activeClass="bg-primary-700 hover:bg-primary-700"
                                     href={`/playlist/${playlist.id}`}
                                 >
