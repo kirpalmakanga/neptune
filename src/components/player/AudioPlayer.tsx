@@ -53,6 +53,7 @@ const PositionBar: Component = () => {
 
 interface Props {
     isPlaying: boolean;
+    isMuted: boolean;
     startTime: number;
     volume: number;
     source: string;
@@ -91,14 +92,24 @@ const AudioPlayer: Component<Props> = (props) => {
         if (startTime) seek(startTime);
     });
 
-    createEffect(() => {
+    createEffect((previousIsPlaying) => {
         const { isPlaying } = props;
 
-        if (isPlaying) play();
-        else pause();
+        if (isPlaying !== previousIsPlaying) isPlaying ? play() : pause();
 
         return isPlaying;
-    });
+    }, props.isPlaying);
+
+    createEffect((previousIsMuted) => {
+        const { isMuted, volume } = props;
+
+        if (isMuted === previousIsMuted) return previousIsMuted;
+
+        if (isMuted) setVolume(0);
+        else setVolume(volume / 100);
+
+        return isMuted;
+    }, props.isMuted);
 
     createEffect((previousCurrentTime) => {
         const { currentTime } = audioState;
@@ -108,7 +119,7 @@ const AudioPlayer: Component<Props> = (props) => {
         }
 
         return currentTime;
-    });
+    }, audioState.currentTime);
 
     createEffect((previousState) => {
         const { state } = audioState;
@@ -140,14 +151,12 @@ const AudioPlayer: Component<Props> = (props) => {
 
     return (
         <div
-            class="relative flex flex-grow bg-primary-700 h-3 overflow-hidden cursor-pointer"
+            class="relative flex flex-grow bg-primary-700 h-3 rounded-lg overflow-hidden cursor-pointer"
             onClick={handleClick}
         >
             <ProgressBar percentage={progress()} />
 
             <PositionBar />
-
-            <span class="hidden">{audioState.state}</span>
         </div>
     );
 };
