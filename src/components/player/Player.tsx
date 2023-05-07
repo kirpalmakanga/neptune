@@ -63,19 +63,20 @@ const Player: Component = () => {
         return index > -1 ? index : 0;
     });
 
-    const getPlaylistItems = () => currentPlaylist()?.items || [];
-
-    const previousTrackId = createMemo(() => {
-        const { id = null } = getPlaylistItems()[currentTrackIndex() - 1] || [];
-
-        return id;
-    });
-
-    const nextTrackId = createMemo(() => {
-        const { id = null } = getPlaylistItems()[currentTrackIndex() + 1] || [];
+    const getPlaylistItemId = (index: number) => {
+        const { items: { [index]: { id = null } = {} } = [] } =
+            currentPlaylist() || {};
 
         return id;
-    });
+    };
+
+    const previousTrackId = createMemo(() =>
+        getPlaylistItemId(currentTrackIndex() - 1)
+    );
+
+    const nextTrackId = createMemo(() =>
+        getPlaylistItemId(currentTrackIndex() + 1)
+    );
 
     const handleTogglePlay = () => setState('isPlaying', !state.isPlaying);
 
@@ -110,6 +111,20 @@ const Player: Component = () => {
 
     return (
         <div class="flex items-center bg-primary-900 p-2 gap-4 overflow-hidden">
+            <div class="flex items-center gap-2">
+                <Img class="h-8 w-8" src={currentTrack().cover} />
+
+                <div class="flex flex-col gap-1 overflow-hidden">
+                    <div class="text-primary-100 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        {currentTrack().title}
+                    </div>
+
+                    <div class="text-primary-200 text-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        {currentTrack().artists || defaultTrack.artists}
+                    </div>
+                </div>
+            </div>
+
             <div class="flex gap-2">
                 <Button
                     class="w-6 h-6 text-primary-100"
@@ -146,20 +161,6 @@ const Player: Component = () => {
                     iconClass="w-6 h-6"
                     onClick={handleSkipTrack('next')}
                 />
-            </div>
-
-            <div class="flex items-center gap-2">
-                <Img class="h-8 w-8" src={currentTrack().cover} />
-
-                <div class="flex flex-col gap-1 overflow-hidden">
-                    <div class="text-primary-100 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
-                        {currentTrack().title}
-                    </div>
-
-                    <div class="text-primary-200 text-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
-                        {currentTrack().artists}
-                    </div>
-                </div>
             </div>
 
             <AudioPlayer
