@@ -25,7 +25,7 @@ const SlidePanel: ParentComponent<Props> = (props) => (
                 <section class="fixed top-0 right-0 bottom-0 shadow z-11 bg-primary-900 w-1/3 flex flex-col">
                     <header class="flex items-center gap-4 p-4 border-b-1 border-primary-100 font-bold">
                         <Button
-                            class="w-5 h-5 text-primary-100"
+                            class="w-5 h-5 text-primary-100 hover:opacity-50 transition-opacity"
                             icon="close"
                             onClick={props.onClickClose}
                         />
