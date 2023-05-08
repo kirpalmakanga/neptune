@@ -7,7 +7,7 @@ export interface PlaylistsState {
 export const initialState = (): PlaylistsState => ({
     items: [
         {
-            id: uuid(),
+            id: 'default',
             title: 'Default',
             items: []
         }

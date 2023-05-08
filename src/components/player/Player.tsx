@@ -1,18 +1,19 @@
-import { Component, createEffect, createMemo, Show } from 'solid-js';
+import { Component, createEffect, createMemo } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { makeAudioPlayer } from '@solid-primitives/audio';
 import { usePlayer } from '../../store/player';
 import { usePlaylists } from '../../store/playlists';
 import Button from '../Button';
-import WavePlayer from './WavePlayer';
 import { formatTime } from '../../utils/helpers';
 import AudioPlayer from './AudioPlayer';
 import Img from '../Img';
+import Volume from './Volume';
 
 interface State {
     isPlaying: boolean;
     isLoading: boolean;
+    isMuted: boolean;
     currentTime: number;
+    volume: number;
 }
 
 const defaultTrack: Track = {
@@ -37,7 +38,9 @@ const Player: Component = () => {
     const [state, setState] = createStore<State>({
         isPlaying: false,
         isLoading: false,
-        currentTime: player.currentTime
+        isMuted: false,
+        currentTime: player.currentTime,
+        volume: player.volume
     });
 
     const currentPlaylist = createMemo(() =>
@@ -100,6 +103,19 @@ const Player: Component = () => {
         setCurrentTime(time);
     };
 
+    const setVolume = (volume: number) => setState('volume', volume);
+
+    const handleWheelVolume = ({ deltaY }: HTMLElementWheelEvent) => {
+        const newVolume = state.volume + (deltaY < 0 ? 5 : -5);
+        const inRange = newVolume >= 0 && newVolume <= 100;
+
+        if (inRange) {
+            setVolume(newVolume);
+        }
+    };
+
+    const handleMute = () => setState('isMuted', !state.isMuted);
+
     createEffect((previousTrackId) => {
         const { currentTrackId } = player;
 
@@ -110,7 +126,7 @@ const Player: Component = () => {
     }, player.currentTrackId);
 
     return (
-        <div class="flex items-center bg-primary-900 p-2 gap-4 overflow-hidden">
+        <div class="relative flex items-center bg-primary-900 p-2 gap-4">
             <div class="flex items-center gap-2">
                 <Img class="h-8 w-8" src={currentTrack().cover} />
 
@@ -165,8 +181,9 @@ const Player: Component = () => {
 
             <AudioPlayer
                 isPlaying={state.isPlaying}
+                isMuted={state.isMuted}
                 startTime={state.currentTime}
-                volume={25}
+                volume={state.volume}
                 source={currentTrack().source}
                 onPlaybackStateChange={handlePlaybackStateChange}
                 onLoadingStateChange={handleLoadingStateChange}
@@ -186,6 +203,26 @@ const Player: Component = () => {
                         ? formatTime(currentTrack().duration)
                         : '--:--'}
                 </span>
+            </div>
+
+            <div class="group flex items-center" onWheel={handleWheelVolume}>
+                <Button
+                    class="w-6 h-6 text-primary-100"
+                    classList={{
+                        'pointer-events-none opacity-50': !currentTrack().id
+                    }}
+                    icon={
+                        state.isMuted || state.volume === 0
+                            ? 'volume-off'
+                            : 'volume-up'
+                    }
+                    iconClass="w-6 h-6"
+                    onClick={handleMute}
+                />
+
+                <div class="absolute bottom-full right-0 w-36 transition-opacity opacity-0 invisible group-hover:(opacity-100 visible)">
+                    <Volume value={state.volume} onChange={setVolume} />
+                </div>
             </div>
         </div>
     );

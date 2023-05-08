@@ -1,5 +1,5 @@
 import { useStore } from '..';
-import { delay } from '../../lib/helpers';
+import { delay } from '../../utils/helpers';
 import { initialState, PromptState } from './_state';
 
 export const usePrompt = () => {

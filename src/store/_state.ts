@@ -14,8 +14,10 @@ import {
     initialState as promptInitialState,
     PromptState
 } from './prompt/_state';
+import { initialState as menuInitialState, MenuState } from './menu/_state';
 
 export interface RootState {
+    menu: MenuState;
     playlists: PlaylistsState;
     player: PlayerState;
     notifications: NotificationState;
@@ -23,6 +25,7 @@ export interface RootState {
 }
 
 export const rootInitialState = (): RootState => ({
+    menu: menuInitialState(),
     playlists: playlistsInitialState(),
     player: playerInitialState(),
     notifications: notificationsInitialState(),

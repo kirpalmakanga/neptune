@@ -8,12 +8,23 @@ import PlaylistItem from '../components/PlaylistItem';
 import { usePlaylists } from '../store/playlists';
 import FileDrop from '../components/FileDrop';
 import { usePlayer } from '../store/player';
+import { useMenu } from '../store/menu';
 
 const Playlist: Component = () => {
     const params = useParams();
-    const [, { updatePlaylist, getPlaylistById, addPlaylistItems }] =
-        usePlaylists();
+    const [
+        ,
+        {
+            updatePlaylist,
+            getPlaylistById,
+            addPlaylistItems,
+            clearPlaylist,
+            deletePlaylist,
+            deletePlaylistItem
+        }
+    ] = usePlaylists();
     const [player, { setCurrentTrack }] = usePlayer();
+    const [, { openMenu }] = useMenu();
 
     const playlist = createMemo(() => getPlaylistById(params.playlistId));
 
@@ -25,6 +36,46 @@ const Playlist: Component = () => {
 
     const handleSetCurrentTrack = (id: string) => () =>
         setCurrentTrack({ id, playlistId: params.playlistId });
+
+    const handleClickPlaylistMenu = () => {
+        if (playlist()) {
+            const { id, title } = playlist();
+
+            openMenu({
+                title,
+                items: [
+                    {
+                        title: 'Clear playlist',
+                        icon: 'delete-alt',
+                        onClick: () => clearPlaylist(id)
+                    },
+                    ...(params.playlistId !== 'default'
+                        ? [
+                              {
+                                  title: 'Remove playlist',
+                                  icon: 'delete',
+                                  onClick: () => deletePlaylist(id)
+                              }
+                          ]
+                        : [])
+                ]
+            });
+        }
+    };
+
+    const handleClickItemMenu =
+        ({ id, title, artists }: Track) =>
+        () =>
+            openMenu({
+                title: `${artists || ''} ${artists ? '-' : ''} ${title}`.trim(),
+                items: [
+                    {
+                        title: 'Remove from playlist',
+                        icon: 'delete',
+                        onClick: () => deletePlaylistItem(id, params.playlistId)
+                    }
+                ]
+            });
 
     return (
         <div class="flex flex-col flex-grow bg-primary-700">
@@ -38,7 +89,10 @@ const Playlist: Component = () => {
                                     {props.data.title}
                                 </h1>
 
-                                <button class="inline-block w-5 h-5 text-primary-100 hover:opacity-70">
+                                <button
+                                    class="inline-block w-5 h-5 text-primary-100 hover:opacity-70"
+                                    onClick={handleClickPlaylistMenu}
+                                >
                                     <Icon class="w-5 h-5" name="more" />
                                 </button>
                             </header>
@@ -59,6 +113,9 @@ const Playlist: Component = () => {
                                                 }
                                                 onClick={handleSetCurrentTrack(
                                                     data.id
+                                                )}
+                                                onClickMenu={handleClickItemMenu(
+                                                    data
                                                 )}
                                             />
                                         )}

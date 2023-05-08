@@ -17,9 +17,20 @@ export const usePlaylists = () => {
     const updatePlaylist = (targetId: string, data: Partial<Playlist>) =>
         setState('playlists', 'items', ({ id }) => id === targetId, data);
 
-    const deletePlaylist = (targetId: string) =>
-        setState('playlists', 'items', (items) =>
-            items.filter(({ id }) => id !== targetId)
+    const deletePlaylist = (itemId: string) => {
+        console.log({ itemId });
+        // setState('playlists', 'items', (items) =>
+        //     items.filter(({ id }) => id !== itemId)
+        // );
+    };
+
+    const deletePlaylistItem = (itemId: string, playlistId: string) =>
+        setState(
+            'playlists',
+            'items',
+            ({ id }) => id === playlistId,
+            'items',
+            (items) => items.filter(({ id }) => id !== itemId)
         );
 
     const clearPlaylist = (targetId: string) =>
@@ -66,6 +77,7 @@ export const usePlaylists = () => {
             createPlaylist,
             updatePlaylist,
             deletePlaylist,
+            deletePlaylistItem,
             clearPlaylist,
             getPlaylistByIndex,
             getPlaylistById,

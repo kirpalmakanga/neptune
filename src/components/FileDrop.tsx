@@ -113,11 +113,11 @@ const FileDrop: ParentComponent<Props> = (props) => {
 
             setIsDraggedOver(false);
 
+            setIsProcessing(false);
+
             props.onDropFiles(filteredEntries);
         }
     };
-
-    const handleOverlayRemoval = () => setIsProcessing(false);
 
     return (
         <div
@@ -128,7 +128,7 @@ const FileDrop: ParentComponent<Props> = (props) => {
         >
             {props.children}
 
-            <Transition name="fade" onAfterExit={handleOverlayRemoval}>
+            <Transition name="fade">
                 <Show when={isDraggedOver()}>
                     <div class="absolute inset-0 bg-primary-800 bg-opacity-50 flex p-2">
                         <div class="flex flex-col flex-grow justify-center items-center border-2 border-dashed border-primary-100 border-opacity-50 rounded">

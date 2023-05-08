@@ -7,6 +7,7 @@ import Playlists from './components/Playlists';
 import Player from './components/player/Player';
 import Notifications from './components/Notifications';
 import { usePlaylists } from './store/playlists';
+import Menu from './components/Menu';
 
 const Root: ParentComponent = (props) => {
     const navigate = useNavigate();
@@ -31,6 +32,8 @@ const Root: ParentComponent = (props) => {
                 {/* <Prompt /> */}
 
                 <Player />
+
+                <Menu />
 
                 <Notifications />
             </div>
