@@ -126,9 +126,9 @@ const Player: Component = () => {
     }, player.currentTrackId);
 
     return (
-        <div class="relative flex items-center bg-primary-900 p-2 gap-4">
+        <div class="relative flex items-center bg-primary-900 p-2 gap-8">
             <div class="flex items-center gap-2">
-                <Img class="h-8 w-8" src={currentTrack().cover} />
+                <Img class="h-20 w-20" src={currentTrack().cover} />
 
                 <div class="flex flex-col gap-1 overflow-hidden">
                     <div class="text-primary-100 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
@@ -141,71 +141,73 @@ const Player: Component = () => {
                 </div>
             </div>
 
-            <div class="flex gap-2">
-                <Button
-                    class="w-6 h-6 text-primary-100"
-                    classList={{
-                        'pointer-events-none opacity-50': !previousTrackId()
-                    }}
-                    icon="previous"
-                    iconClass="w-6 h-6"
-                    onClick={handleSkipTrack('previous')}
-                />
+            <div class="flex flex-col flex-1 items-center gap-2">
+                <div class="flex gap-2">
+                    <Button
+                        class="w-6 h-6 text-primary-100"
+                        classList={{
+                            'pointer-events-none opacity-50': !previousTrackId()
+                        }}
+                        icon="previous"
+                        iconClass="w-6 h-6"
+                        onClick={handleSkipTrack('previous')}
+                    />
 
-                <Button
-                    class="w-6 h-6 text-primary-100"
-                    classList={{
-                        'pointer-events-none': state.isLoading
-                    }}
-                    icon={
-                        state.isLoading
-                            ? 'loading'
-                            : state.isPlaying
-                            ? 'pause'
-                            : 'play'
-                    }
-                    iconClass="w-6 h-6"
-                    onClick={handleTogglePlay}
-                />
+                    <Button
+                        class="w-6 h-6 text-primary-100"
+                        classList={{
+                            'pointer-events-none': state.isLoading
+                        }}
+                        icon={
+                            state.isLoading
+                                ? 'loading'
+                                : state.isPlaying
+                                ? 'pause'
+                                : 'play'
+                        }
+                        iconClass="w-6 h-6"
+                        onClick={handleTogglePlay}
+                    />
 
-                <Button
-                    class="w-6 h-6 text-primary-100"
-                    classList={{
-                        'pointer-events-none opacity-50': !nextTrackId()
-                    }}
-                    icon="next"
-                    iconClass="w-6 h-6"
-                    onClick={handleSkipTrack('next')}
-                />
+                    <Button
+                        class="w-6 h-6 text-primary-100"
+                        classList={{
+                            'pointer-events-none opacity-50': !nextTrackId()
+                        }}
+                        icon="next"
+                        iconClass="w-6 h-6"
+                        onClick={handleSkipTrack('next')}
+                    />
+                </div>
+
+                <div class="w-full flex items-center gap-2 text-sm text-primary-100">
+                    <span>
+                        {currentTrack().duration
+                            ? formatTime(state.currentTime)
+                            : '--:--'}
+                    </span>
+
+                    <AudioPlayer
+                        isPlaying={state.isPlaying}
+                        isMuted={state.isMuted}
+                        startTime={state.currentTime}
+                        volume={state.volume}
+                        source={currentTrack().source}
+                        onPlaybackStateChange={handlePlaybackStateChange}
+                        onLoadingStateChange={handleLoadingStateChange}
+                        onTimeUpdate={handleTimeUpdate}
+                        onEnd={handleSkipTrack('next')}
+                    />
+
+                    <span>
+                        {currentTrack().duration
+                            ? formatTime(currentTrack().duration)
+                            : '--:--'}
+                    </span>
+                </div>
             </div>
 
-            <AudioPlayer
-                isPlaying={state.isPlaying}
-                isMuted={state.isMuted}
-                startTime={state.currentTime}
-                volume={state.volume}
-                source={currentTrack().source}
-                onPlaybackStateChange={handlePlaybackStateChange}
-                onLoadingStateChange={handleLoadingStateChange}
-                onTimeUpdate={handleTimeUpdate}
-                onEnd={handleSkipTrack('next')}
-            />
-
-            <div class="flex gap-1 text-sm text-primary-100">
-                <span>
-                    {currentTrack().duration
-                        ? formatTime(state.currentTime)
-                        : '--:--'}
-                </span>
-                <span>/</span>
-                <span>
-                    {currentTrack().duration
-                        ? formatTime(currentTrack().duration)
-                        : '--:--'}
-                </span>
-            </div>
-
-            <div class="group flex items-center" onWheel={handleWheelVolume}>
+            <div class="flex items-center gap-2" onWheel={handleWheelVolume}>
                 <Button
                     class="w-6 h-6 text-primary-100"
                     classList={{
@@ -220,9 +222,7 @@ const Player: Component = () => {
                     onClick={handleMute}
                 />
 
-                <div class="absolute bottom-full right-0 w-36 transition-opacity opacity-0 invisible group-hover:(opacity-100 visible)">
-                    <Volume value={state.volume} onChange={setVolume} />
-                </div>
+                <Volume value={state.volume} onChange={setVolume} />
             </div>
         </div>
     );

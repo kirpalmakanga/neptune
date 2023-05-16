@@ -11,16 +11,14 @@ const Volume: Component<Props> = (props) => {
     }) => props.onChange(parseInt(value));
 
     return (
-        <div class="bg-primary-900 px-2 py-2">
-            <input
-                class="w-full"
-                type="range"
-                min="0"
-                max="100"
-                value={props.value}
-                onChange={handleUpdate}
-            />
-        </div>
+        <input
+            class="w-full"
+            type="range"
+            min="0"
+            max="100"
+            value={props.value}
+            onChange={handleUpdate}
+        />
     );
 };
 
