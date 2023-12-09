@@ -22,6 +22,7 @@ const PlaylistItem: Component<Props> = (props) => {
             onDblClick={props.isCurrent ? undefined : props.onClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onContextMenu={props.onClickMenu}
         >
             <div class="w-6 h-6 flex justify-center items-center text-xs text-primary-200">
                 <Show when={isHovered()} fallback={props.trackNumber}>

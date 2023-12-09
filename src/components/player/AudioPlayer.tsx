@@ -20,19 +20,24 @@ const ProgressBar: Component<{ percentage: number }> = (props) => (
     </span>
 );
 
-const PositionBar: Component = () => {
+interface SeekBarProps {
+    onSeek: (percent: number) => void;
+}
+
+const SeekBar: Component<SeekBarProps> = (props) => {
     const [seekingPosition, setSeekingPosition] = createSignal(0);
 
     let container!: HTMLSpanElement;
 
-    const handleMouseMove = throttle(({ currentTarget, pageX }) => {
-        const { left } = currentTarget.getBoundingClientRect();
-        const position = (100 * (pageX - left)) / currentTarget.offsetWidth;
+    const handleMouseMove = throttle(({ pageX }) => {
+        const { left } = container.getBoundingClientRect();
 
-        setSeekingPosition(position);
+        setSeekingPosition((pageX - left) / container.offsetWidth);
     }, 10);
 
     const handleMouseLeave = () => setSeekingPosition(0);
+
+    const handleClick = () => props.onSeek(seekingPosition());
 
     return (
         <span
@@ -40,11 +45,12 @@ const PositionBar: Component = () => {
             class="absolute inset-0 overflow-hidden"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
         >
             <span
                 class="absolute inset-0 bg-primary-100 bg-opacity-40 bg-opacity"
                 style={{
-                    transform: `translateX(${seekingPosition() - 100}%)`
+                    transform: `translateX(${100 * seekingPosition() - 100}%)`
                 }}
             ></span>
         </span>
@@ -74,15 +80,8 @@ const AudioPlayer: Component<Props> = (props) => {
         () => (100 * audioState.currentTime) / audioState.duration
     );
 
-    const handleClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({
-        currentTarget,
-        pageX
-    }) => {
-        const { left } = currentTarget.getBoundingClientRect();
-        const positionPercent = (pageX - left) / currentTarget.offsetWidth;
-
+    const handleSeeking = (positionPercent: number) =>
         seek(positionPercent * audioState.duration);
-    };
 
     onMount(() => {
         const { volume, startTime } = props;
@@ -122,7 +121,7 @@ const AudioPlayer: Component<Props> = (props) => {
     }, audioState.currentTime);
 
     createEffect((previousState) => {
-        const { state } = audioState;
+        const { state, currentTime, duration } = audioState;
 
         if (state !== previousState) {
             switch (state) {
@@ -139,8 +138,7 @@ const AudioPlayer: Component<Props> = (props) => {
                     break;
 
                 case 'paused':
-                    if (audioState.currentTime >= audioState.duration)
-                        props.onEnd();
+                    if (currentTime >= duration) props.onEnd();
                     else props.onPlaybackStateChange(false);
                     break;
             }
@@ -150,13 +148,10 @@ const AudioPlayer: Component<Props> = (props) => {
     }, audioState.state);
 
     return (
-        <div
-            class="relative flex flex-grow bg-primary-700 h-3 rounded-lg overflow-hidden cursor-pointer"
-            onClick={handleClick}
-        >
+        <div class="relative flex flex-grow bg-primary-700 h-3 rounded-lg overflow-hidden cursor-pointer">
             <ProgressBar percentage={progress()} />
 
-            <PositionBar />
+            <SeekBar onSeek={handleSeeking} />
         </div>
     );
 };

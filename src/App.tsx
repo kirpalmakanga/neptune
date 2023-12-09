@@ -1,6 +1,6 @@
 import { onMount, ParentComponent } from 'solid-js';
-import { Transition } from 'solid-transition-group';
 import { useNavigate } from '@solidjs/router';
+import { Transition } from 'solid-transition-group';
 import Sprite from './components/Sprite';
 // import Prompt from './components/Prompt';
 import Playlists from './components/Playlists';
@@ -27,7 +27,9 @@ const Root: ParentComponent = (props) => {
                 <div class="flex flex-grow">
                     <Playlists />
 
-                    {props.children}
+                    <Transition name="fade" mode="outin">
+                        {props.children}
+                    </Transition>
                 </div>
                 {/* <Prompt /> */}
 

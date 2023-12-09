@@ -1,6 +1,6 @@
-import { Component, createMemo, Show } from 'solid-js';
+import { Component, createEffect, createMemo, Show } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { useParams } from '@solidjs/router';
+import { useNavigate, useParams } from '@solidjs/router';
 import Icon from '../components/Icon';
 import ScrollContainer from '../components/ScrollContainer';
 import SortableList from '../components/SortableList';
@@ -12,6 +12,7 @@ import { useMenu } from '../store/menu';
 
 const Playlist: Component = () => {
     const params = useParams();
+    const navigate = useNavigate();
     const [
         ,
         {
@@ -38,29 +39,40 @@ const Playlist: Component = () => {
         setCurrentTrack({ id, playlistId: params.playlistId });
 
     const handleClickPlaylistMenu = () => {
-        if (playlist()) {
-            const { id, title } = playlist();
+        const { id, title } = playlist() as Playlist;
 
-            openMenu({
-                title,
-                items: [
-                    {
-                        title: 'Clear playlist',
-                        icon: 'delete-alt',
-                        onClick: () => clearPlaylist(id)
-                    },
-                    ...(params.playlistId !== 'default'
-                        ? [
-                              {
-                                  title: 'Remove playlist',
-                                  icon: 'delete',
-                                  onClick: () => deletePlaylist(id)
+        openMenu({
+            title,
+            items: [
+                ...(params.playlistId !== 'default'
+                    ? [
+                          {
+                              title: 'Rename playlist',
+                              icon: 'edit',
+                              onClick: () => {}
+                          }
+                      ]
+                    : []),
+                {
+                    title: 'Clear playlist',
+                    icon: 'delete-alt',
+                    onClick: () => clearPlaylist(id)
+                },
+                ...(params.playlistId !== 'default'
+                    ? [
+                          {
+                              title: 'Remove playlist',
+                              icon: 'delete',
+                              onClick: () => {
+                                  deletePlaylist(id);
+
+                                  //navigate to previous playlist
                               }
-                          ]
-                        : [])
-                ]
-            });
-        }
+                          }
+                      ]
+                    : [])
+            ]
+        });
     };
 
     const handleClickItemMenu =

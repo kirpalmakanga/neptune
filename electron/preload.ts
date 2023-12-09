@@ -1,4 +1,4 @@
-const path = require('path');
+// const path = require('path');
 const { contextBridge } = require('electron');
 const musicMetadata = require('music-metadata');
 const mime = require('mime-types');

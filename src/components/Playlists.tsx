@@ -1,6 +1,5 @@
 import { Component, createSignal, For } from 'solid-js';
-import { NavLink } from '@solidjs/router';
-import Icon from './Icon';
+import { A } from '@solidjs/router';
 import ScrollContainer from './ScrollContainer';
 
 import { usePlaylists } from '../store/playlists';
@@ -40,7 +39,7 @@ const Playlists: Component = () => {
                     <For each={playlists.items}>
                         {(playlist) => (
                             <li>
-                                <NavLink
+                                <A
                                     class="flex gap-3 justify-between items-center p-3 no-underline overflow-hidden text-primary-100 hover:bg-primary-600 transition-colors"
                                     activeClass="bg-primary-700 hover:bg-primary-700"
                                     href={`/playlist/${playlist.id}`}
@@ -56,7 +55,7 @@ const Playlists: Component = () => {
                                                 : 's'
                                         }`}
                                     </span>
-                                </NavLink>
+                                </A>
                             </li>
                         )}
                     </For>

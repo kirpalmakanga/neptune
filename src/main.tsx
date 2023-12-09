@@ -1,11 +1,11 @@
 import { render } from 'solid-js/web';
-import { Router } from '@solidjs/router';
-import Root from './Root';
+import { Router, Route } from '@solidjs/router';
+import Root from './App';
 import { StoreProvider } from './store';
+import Playlist from './pages/Playlist';
 
 import 'virtual:windi.css';
 import './assets/styles/main.scss';
-import Routes from './Routes';
 
 const appContainer = document.querySelector('#app');
 const loader = document.querySelector('#app-loader');
@@ -14,10 +14,8 @@ if (appContainer) {
     render(
         () => (
             <StoreProvider>
-                <Router>
-                    <Root>
-                        <Routes />
-                    </Root>
+                <Router root={Root}>
+                    <Route path="/playlist/:playlistId" component={Playlist} />
                 </Router>
             </StoreProvider>
         ),

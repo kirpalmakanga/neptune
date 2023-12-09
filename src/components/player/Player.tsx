@@ -105,7 +105,7 @@ const Player: Component = () => {
 
     const setVolume = (volume: number) => setState('volume', volume);
 
-    const handleWheelVolume = ({ deltaY }: HTMLElementWheelEvent) => {
+    const handleWheelVolume = ({ deltaY }: WheelEvent) => {
         const newVolume = state.volume + (deltaY < 0 ? 5 : -5);
         const inRange = newVolume >= 0 && newVolume <= 100;
 
@@ -115,6 +115,26 @@ const Player: Component = () => {
     };
 
     const handleMute = () => setState('isMuted', !state.isMuted);
+
+    const formattedCurrentTime = createMemo(() => {
+        const { duration } = currentTrack();
+
+        if (duration) {
+            return formatTime(state.currentTime);
+        }
+
+        return '--:--';
+    });
+
+    const formattedDuration = createMemo(() => {
+        const { duration } = currentTrack();
+
+        if (duration) {
+            return formatTime(duration);
+        }
+
+        return '--:--';
+    });
 
     createEffect((previousTrackId) => {
         const { currentTrackId } = player;
@@ -126,11 +146,14 @@ const Player: Component = () => {
     }, player.currentTrackId);
 
     return (
-        <div class="relative flex items-center bg-primary-900 p-2 gap-8">
-            <div class="flex items-center gap-2">
-                <Img class="h-20 w-20" src={currentTrack().cover} />
+        <div class="relative flex items-center bg-primary-900 gap-8">
+            <div class="flex items-center w-xs gap-2 p-2">
+                <Img
+                    class="flex-shrink-0 h-20 w-20"
+                    src={currentTrack().cover}
+                />
 
-                <div class="flex flex-col gap-1 overflow-hidden">
+                <div class="flex flex-grow flex-col gap-1 overflow-hidden">
                     <div class="text-primary-100 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
                         {currentTrack().title}
                     </div>
@@ -181,11 +204,7 @@ const Player: Component = () => {
                 </div>
 
                 <div class="w-full flex items-center gap-2 text-sm text-primary-100">
-                    <span>
-                        {currentTrack().duration
-                            ? formatTime(state.currentTime)
-                            : '--:--'}
-                    </span>
+                    <span>{formattedCurrentTime()}</span>
 
                     <AudioPlayer
                         isPlaying={state.isPlaying}
@@ -199,15 +218,14 @@ const Player: Component = () => {
                         onEnd={handleSkipTrack('next')}
                     />
 
-                    <span>
-                        {currentTrack().duration
-                            ? formatTime(currentTrack().duration)
-                            : '--:--'}
-                    </span>
+                    <span>{formattedDuration()}</span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2" onWheel={handleWheelVolume}>
+            <div
+                class="flex items-center gap-2 p-2"
+                onWheel={handleWheelVolume}
+            >
                 <Button
                     class="w-6 h-6 text-primary-100"
                     classList={{
