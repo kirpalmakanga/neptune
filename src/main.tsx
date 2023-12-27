@@ -1,6 +1,6 @@
 import { render } from 'solid-js/web';
 import { Router, Route } from '@solidjs/router';
-import Root from './App';
+import App from './App';
 import { StoreProvider } from './store';
 import Playlist from './pages/Playlist';
 
@@ -14,7 +14,8 @@ if (appContainer) {
     render(
         () => (
             <StoreProvider>
-                <Router root={Root}>
+                <Router root={App}>
+                    <Route path="/" />
                     <Route path="/playlist/:playlistId" component={Playlist} />
                 </Router>
             </StoreProvider>
