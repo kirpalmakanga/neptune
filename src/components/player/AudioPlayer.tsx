@@ -1,5 +1,4 @@
 import { createAudio } from '@solid-primitives/audio';
-import { JSX } from 'solid-js';
 import {
     Component,
     createEffect,
