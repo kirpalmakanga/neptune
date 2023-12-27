@@ -1,18 +1,17 @@
-import { Component, createEffect, createMemo, Show } from 'solid-js';
+import { Component, createMemo, Show } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
-import { useNavigate, useParams } from '@solidjs/router';
+import { useParams } from '@solidjs/router';
 import Icon from '../components/Icon';
 import ScrollContainer from '../components/ScrollContainer';
 import SortableList from '../components/SortableList';
 import PlaylistItem from '../components/PlaylistItem';
-import { usePlaylists } from '../store/playlists';
 import FileDrop from '../components/FileDrop';
+import { usePlaylists } from '../store/playlists';
 import { usePlayer } from '../store/player';
 import { useMenu } from '../store/menu';
 
 const Playlist: Component = () => {
     const params = useParams();
-    const navigate = useNavigate();
     const [
         ,
         {
