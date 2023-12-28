@@ -9,19 +9,12 @@ interface Props {
 
 const readEntriesPromise = async (
     directoryReader: FileSystemDirectoryReader
-): Promise<FileSystemEntry[]> => {
-    try {
-        return await new Promise((resolve, reject) =>
-            directoryReader.readEntries(resolve, reject)
-        );
-    } catch (err) {
-        console.log(err);
+): Promise<FileSystemEntry[]> =>
+    new Promise((resolve, reject) =>
+        directoryReader.readEntries(resolve, reject)
+    );
 
-        return [];
-    }
-};
-
-const readAllDirectoryEntries = async (
+const readDirectoryEntries = async (
     directoryReader: FileSystemDirectoryReader
 ) => {
     let entries = [];
@@ -39,12 +32,15 @@ const readAllDirectoryEntries = async (
 const getAllFileEntries = async (
     dataTransferItemList: DataTransferItemList
 ) => {
-    let fileEntries = [];
+    /* TODO: refacto with proper recursion */
+    let fileEntries: FileSystemFileEntry[] = [];
 
     let queue: FileSystemEntry[] = [];
 
     for (const item of dataTransferItemList) {
-        if (item) queue.push(item.webkitGetAsEntry());
+        const entry = item?.webkitGetAsEntry();
+
+        if (entry) queue.push(entry);
     }
 
     while (queue.length > 0) {
@@ -56,7 +52,7 @@ const getAllFileEntries = async (
             fileEntries.push(entry as FileSystemFileEntry);
         } else if (entry.isDirectory) {
             queue.push(
-                ...(await readAllDirectoryEntries(
+                ...(await readDirectoryEntries(
                     (entry as FileSystemDirectoryEntry).createReader()
                 ))
             );
@@ -111,12 +107,12 @@ const FileDrop: ParentComponent<Props> = (props) => {
                 }
             }
 
-            setIsDraggedOver(false);
-
             setIsProcessing(false);
 
             props.onDropFiles(filteredEntries);
         }
+
+        setIsDraggedOver(false);
     };
 
     return (

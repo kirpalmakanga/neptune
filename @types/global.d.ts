@@ -1,6 +1,14 @@
 export {};
 
 declare global {
+    interface Window {
+        electron: { getFileMetadata: (path: string) => Track };
+    }
+
+    interface File {
+        path: string;
+    }
+
     interface Track {
         id: string;
         title: string;
