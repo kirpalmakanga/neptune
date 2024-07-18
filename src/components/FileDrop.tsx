@@ -7,12 +7,13 @@ interface Props {
     onDropFiles: (files: Track[]) => void;
 }
 
-const readEntriesPromise = async (
+const readEntriesPromise = (
     directoryReader: FileSystemDirectoryReader
-): Promise<FileSystemEntry[]> =>
-    new Promise((resolve, reject) =>
-        directoryReader.readEntries(resolve, reject)
-    );
+): Promise<FileSystemEntry[]> => {
+    return new Promise((resolve, reject) => {
+        directoryReader.readEntries(resolve, reject);
+    });
+};
 
 const readDirectoryEntries = async (
     directoryReader: FileSystemDirectoryReader
@@ -59,11 +60,22 @@ const getAllFileEntries = async (
         }
     }
 
+    fileEntries.sort((a, b) => {
+        if (a.fullPath < b.fullPath) {
+            return -1;
+        }
+        if (a.fullPath > b.fullPath) {
+            return 1;
+        }
+        return 0;
+    });
+
     return fileEntries;
 };
 
-const getFileFromEntry = (entry: FileSystemFileEntry): Promise<File> =>
-    new Promise((resolve, reject) => entry.file(resolve, reject));
+const getFileFromEntry = (entry: FileSystemFileEntry): Promise<File> => {
+    return new Promise((resolve, reject) => entry.file(resolve, reject));
+};
 
 const FileDrop: ParentComponent<Props> = (props) => {
     const [isDraggedOver, setIsDraggedOver] = createSignal(false);
@@ -71,14 +83,11 @@ const FileDrop: ParentComponent<Props> = (props) => {
 
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
-        console.log('over');
         if (!isDraggedOver()) setIsDraggedOver(true);
     };
 
     const handleDragLeave = (e: DragEvent) => {
         e.preventDefault();
-
-        console.log('leave');
 
         setIsDraggedOver(false);
     };
