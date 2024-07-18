@@ -71,12 +71,14 @@ const FileDrop: ParentComponent<Props> = (props) => {
 
     const handleDragOver = (e: DragEvent) => {
         e.preventDefault();
-
+        console.log('over');
         if (!isDraggedOver()) setIsDraggedOver(true);
     };
 
     const handleDragLeave = (e: DragEvent) => {
         e.preventDefault();
+
+        console.log('leave');
 
         setIsDraggedOver(false);
     };
@@ -126,7 +128,7 @@ const FileDrop: ParentComponent<Props> = (props) => {
 
             <Transition name="fade">
                 <Show when={isDraggedOver()}>
-                    <div class="absolute inset-0 bg-primary-800 bg-opacity-50 flex p-2">
+                    <div class="absolute inset-0 bg-primary-800 bg-opacity-50 flex p-2 pointer-events-none">
                         <div class="flex flex-col flex-grow justify-center items-center border-2 border-dashed border-primary-100 border-opacity-50 rounded">
                             <Show
                                 when={isProcessing()}
