@@ -179,7 +179,8 @@ const Player: Component = () => {
                     <Button
                         class="w-6 h-6 text-primary-100"
                         classList={{
-                            'pointer-events-none': state.isLoading
+                            'pointer-events-none opacity-50':
+                                state.isLoading || !currentTrack().id
                         }}
                         icon={
                             state.isLoading

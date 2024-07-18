@@ -147,7 +147,12 @@ const AudioPlayer: Component<Props> = (props) => {
     }, audioState.state);
 
     return (
-        <div class="relative flex flex-grow bg-primary-700 h-3 rounded-lg overflow-hidden cursor-pointer">
+        <div
+            class="relative flex flex-grow bg-primary-700 h-3 rounded-lg overflow-hidden cursor-pointer"
+            classList={{
+                'pointer-events-none opacity-50': !props.source
+            }}
+        >
             <ProgressBar percentage={progress()} />
 
             <SeekBar onSeek={handleSeeking} />
